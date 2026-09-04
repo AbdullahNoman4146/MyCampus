@@ -1,47 +1,105 @@
 @model MyCampus.Models.CampusEvent
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Event";
 }
 
-<h1>Edit</h1>
+<div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+        <div class="glass-card p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stat-icon-wrapper" style="background: rgba(59, 130, 246, 0.15); color: #60A5FA; width: 46px; height: 46px; font-size: 1.25rem;">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-1 text-white">Edit Event Details</h3>
+                        <p class="text-secondary small mb-0">Update event venue, timing, capacity, or schedule</p>
+                    </div>
+                </div>
+                <a asp-action="Index" class="btn btn-sm btn-glass text-light">
+                    <i class="bi bi-arrow-left me-1"></i> Back
+                </a>
+            </div>
 
-<h4>CampusEvent</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="EventId" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Date" class="control-label"></label>
-                <input asp-for="Date" class="form-control" />
-                <span asp-validation-for="Date" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Time" class="control-label"></label>
-                <input asp-for="Time" class="form-control" />
-                <span asp-validation-for="Time" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Capacity" class="control-label"></label>
-                <input asp-for="Capacity" class="form-control" />
-                <span asp-validation-for="Capacity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger bg-danger bg-opacity-10 border-danger border-opacity-25 text-danger py-2 small rounded-3 mb-4" role="alert"></div>
+                <input type="hidden" asp-for="EventId" />
+                <input type="hidden" asp-for="ExternalId" />
+                <input type="hidden" asp-for="RegisteredUsers" />
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label asp-for="Name" class="form-label small fw-semibold text-light">Event Name <span class="text-danger">*</span></label>
+                        <input asp-for="Name" class="form-control" required />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label small fw-semibold text-light">Event Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Date" class="form-label small fw-semibold text-light">Start Date <span class="text-danger">*</span></label>
+                        <input asp-for="Date" type="date" class="form-control" required />
+                        <span asp-validation-for="Date" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="EndDate" class="form-label small fw-semibold text-light">End Date</label>
+                        <input asp-for="EndDate" type="date" class="form-control" />
+                        <span asp-validation-for="EndDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="StartTime" class="form-label small fw-semibold text-light">Start Time <span class="text-danger">*</span></label>
+                        <input asp-for="StartTime" type="time" class="form-control" required />
+                        <span asp-validation-for="StartTime" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="EndTime" class="form-label small fw-semibold text-light">End Time <span class="text-danger">*</span></label>
+                        <input asp-for="EndTime" type="time" class="form-control" required />
+                        <span asp-validation-for="EndTime" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Capacity" class="form-label small fw-semibold text-light">Max Capacity <span class="text-danger">*</span></label>
+                        <input asp-for="Capacity" type="number" class="form-control" min="1" required />
+                        <span asp-validation-for="Capacity" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Venue" class="form-label small fw-semibold text-light">Venue / Room <span class="text-danger">*</span></label>
+                        <input asp-for="Venue" class="form-control" required />
+                        <span asp-validation-for="Venue" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Organizer" class="form-label small fw-semibold text-light">Organizer / Club</label>
+                        <input asp-for="Organizer" class="form-control" />
+                        <span asp-validation-for="Organizer" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Status" class="form-label small fw-semibold text-light">Event Status</label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="upcoming" selected="@(Model.Status == "upcoming")">Upcoming</option>
+                            <option value="ongoing" selected="@(Model.Status == "ongoing")">Ongoing</option>
+                            <option value="completed" selected="@(Model.Status == "completed")">Completed</option>
+                            <option value="cancelled" selected="@(Model.Status == "cancelled")">Cancelled</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-3 mt-4 pt-4 border-top border-secondary border-opacity-10">
+                    <a asp-action="Index" class="btn btn-glass px-4">Cancel</a>
+                    <button type="submit" class="btn btn-gradient-primary px-4 shadow">
+                        <i class="bi bi-check2-circle me-1"></i> Update Event
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

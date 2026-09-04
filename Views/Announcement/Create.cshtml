@@ -1,48 +1,83 @@
 @model MyCampus.Models.Announcement
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Post Announcement";
 }
 
-<h1>Create</h1>
-
-<h4>Announcement</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+<div class="row justify-content-center">
+    <div class="col-12 col-md-9 col-lg-7">
+        <div class="glass-card p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stat-icon-wrapper" style="background: rgba(245, 158, 11, 0.15); color: #FBBF24; width: 46px; height: 46px; font-size: 1.25rem;">
+                        <i class="bi bi-megaphone"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-1 text-white">Post Announcement</h3>
+                        <p class="text-secondary small mb-0">Publish an official notice, room change, or emergency bulletin</p>
+                    </div>
+                </div>
+                <a asp-action="Index" class="btn btn-sm btn-glass text-light">
+                    <i class="bi bi-arrow-left me-1"></i> Back
+                </a>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Body" class="control-label"></label>
-                <input asp-for="Body" class="form-control" />
-                <span asp-validation-for="Body" class="text-danger"></span>
-            </div>
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger bg-danger bg-opacity-10 border-danger border-opacity-25 text-danger py-2 small rounded-3 mb-4" role="alert"></div>
 
-            <div class="form-group">
-                <label asp-for="Date" class="control-label"></label>
-                <input asp-for="Date" class="form-control" />
-                <span asp-validation-for="Date" class="text-danger"></span>
-            </div>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label asp-for="Title" class="form-label small fw-semibold text-light">Notice Title <span class="text-danger">*</span></label>
+                        <input asp-for="Title" class="form-control" placeholder="e.g. CSE 4113 Class Rescheduled — Sunday 7 Sep" required />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
 
-            <div class="form-group">
-                <label asp-for="Priority" class="control-label"></label>
-                <input asp-for="Priority" class="form-control" />
-                <span asp-validation-for="Priority" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+                    <div class="col-12">
+                        <label asp-for="Body" class="form-label small fw-semibold text-light">Announcement Details <span class="text-danger">*</span></label>
+                        <textarea asp-for="Body" class="form-control" rows="4" placeholder="Full notice message..." required></textarea>
+                        <span asp-validation-for="Body" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Priority" class="form-label small fw-semibold text-light">Priority Level <span class="text-danger">*</span></label>
+                        <select asp-for="Priority" class="form-select" required>
+                            <option value="high">High / Urgent</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                        <span asp-validation-for="Priority" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="PostedBy" class="form-label small fw-semibold text-light">Posted By (Author / Authority)</label>
+                        <input asp-for="PostedBy" class="form-control" placeholder="e.g. Prof. Dr. Md. Shahriar Mahbub" />
+                        <span asp-validation-for="PostedBy" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Date" class="form-label small fw-semibold text-light">Publish Date <span class="text-danger">*</span></label>
+                        <input asp-for="Date" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                        <span asp-validation-for="Date" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Expires" class="form-label small fw-semibold text-light">Expiry Date (optional)</label>
+                        <input asp-for="Expires" type="date" class="form-control" />
+                        <span asp-validation-for="Expires" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-3 mt-4 pt-4 border-top border-secondary border-opacity-10">
+                    <a asp-action="Index" class="btn btn-glass px-4">Cancel</a>
+                    <button type="submit" class="btn btn-gradient-primary px-4 shadow">
+                        <i class="bi bi-check2-circle me-1"></i> Publish Notice
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,8 +1,361 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model MyCampus.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+    var hour = DateTime.Now.Hour;
+    var greeting = hour < 12 ? "Good Morning" : (hour < 18 ? "Good Afternoon" : "Good Evening");
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Welcome Banner -->
+<div class="welcome-hero d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-4">
+    <div>
+        <div class="hero-date-chip">
+            <i class="bi bi-calendar3"></i> @DateTime.Now.ToString("dddd, MMMM dd, yyyy")
+        </div>
+        <h1>@greeting</h1>
+        <p>Welcome to MyCampus dashboard.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a asp-controller="AiAgent" asp-action="Index" class="btn-gradient-primary">
+            <i class="bi bi-cpu me-1"></i> AI Assistant
+        </a>
+        <a asp-controller="RoomBookings" asp-action="Create" class="btn-gradient-primary">
+            <i class="bi bi-plus-lg me-1"></i> Reserve Room
+        </a>
+        <a asp-controller="CampusEvents" asp-action="Index" class="btn-glass">
+            <i class="bi bi-flag me-1"></i> Events
+        </a>
+    </div>
+</div>
+
+<!-- 4 Stat Cards (KPIs) -->
+<div class="row g-3 mb-4">
+    <!-- Stat 1: Today's Classes -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-info">
+                <span class="stat-label">Today's Classes</span>
+                <span class="stat-value">@Model.TotalClassesCount</span>
+            </div>
+            <div class="stat-icon-wrapper icon-purple">
+                <i class="bi bi-calendar3"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stat 2: Available Rooms -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-info">
+                <span class="stat-label">Available Rooms</span>
+                <span class="stat-value">@Model.AvailableRoomsCount</span>
+            </div>
+            <div class="stat-icon-wrapper icon-lime">
+                <i class="bi bi-door-closed"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stat 3: Upcoming Events -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-info">
+                <span class="stat-label">Upcoming Events</span>
+                <span class="stat-value">@Model.UpcomingEventsCount</span>
+            </div>
+            <div class="stat-icon-wrapper icon-blue">
+                <i class="bi bi-flag"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stat 4: Pending Assignments -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-info">
+                <span class="stat-label">Assignments Due</span>
+                <span class="stat-value">@Model.PendingAssignmentsCount</span>
+            </div>
+            <div class="stat-icon-wrapper icon-pink">
+                <i class="bi bi-journal-text"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Row 1: Today's Schedule & Latest Announcements -->
+<div class="row g-4 mb-4">
+    <!-- Today's Schedule -->
+    <div class="col-12 col-lg-8">
+        <div class="glass-card h-100">
+            <div class="glass-card-header">
+                <h5><i class="bi bi-calendar3 text-primary"></i> Today's Schedule (@DateTime.Now.DayOfWeek)</h5>
+                <a asp-controller="Schedules" asp-action="Index" class="btn-glass btn-sm">Full Schedule &rarr;</a>
+            </div>
+            <div class="glass-card-body">
+                @if (Model.TodaySchedules != null && Model.TodaySchedules.Any())
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var item in Model.TodaySchedules)
+                        {
+                            <div class="schedule-card-item">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="course-code-badge">@item.Course</span>
+                                        @if (!string.IsNullOrEmpty(item.Section))
+                                        {
+                                            <span class="badge-glass">Sec @item.Section</span>
+                                        }
+                                        <span class="badge-glow badge-glow-purple">@item.Time</span>
+                                    </div>
+                                    <div class="fw-bold text-white fs-6">@(item.Title ?? item.Course)</div>
+                                    <div class="text-secondary small mt-1">Instructor: @item.Instructor</div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge-glass fs-6">Room @item.Room</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-calendar-check text-muted" style="font-size: 2rem;"></i>
+                        <h6 class="text-white fw-bold mt-2">No classes scheduled for today</h6>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Latest Announcements -->
+    <div class="col-12 col-lg-4">
+        <div class="glass-card h-100">
+            <div class="glass-card-header">
+                <h5><i class="bi bi-megaphone text-primary"></i> Announcements</h5>
+                <a asp-controller="Announcements" asp-action="Index" class="btn-glass btn-sm">All &rarr;</a>
+            </div>
+            <div class="glass-card-body">
+                @if (Model.LatestAnnouncements != null && Model.LatestAnnouncements.Any())
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var announcement in Model.LatestAnnouncements)
+                        {
+                            var priorityLower = announcement.Priority?.ToLower() ?? "medium";
+                            var cardPriorityClass = priorityLower == "high" ? "priority-high" : (priorityLower == "medium" ? "priority-medium" : "priority-low");
+                            var badgePriorityClass = priorityLower == "high" ? "badge-glow-rose" : (priorityLower == "medium" ? "badge-glow-amber" : "badge-glow-lime");
+
+                            <div class="announcement-card @cardPriorityClass p-3 mb-0">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="badge-glow @badgePriorityClass">@announcement.Priority Priority</span>
+                                    <span class="text-muted small">@announcement.Date.ToString("MMM dd")</span>
+                                </div>
+                                <div class="fw-bold text-white mb-1" style="font-size: 0.95rem;">@announcement.Title</div>
+                                @if (!string.IsNullOrEmpty(announcement.PostedBy))
+                                {
+                                    <div class="small text-secondary mb-1">@announcement.PostedBy</div>
+                                }
+                                <p class="text-secondary small mb-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                    @announcement.Body
+                                </p>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5 text-muted small">No active announcements.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Row 2: Available Rooms & Upcoming Events -->
+<div class="row g-4 mb-4">
+    <!-- Available Rooms -->
+    <div class="col-12 col-lg-6">
+        <div class="glass-card h-100">
+            <div class="glass-card-header">
+                <h5><i class="bi bi-door-closed text-primary"></i> Available Rooms & Labs</h5>
+                <a asp-controller="Rooms" asp-action="Index" class="btn-glass btn-sm">Browse All &rarr;</a>
+            </div>
+            <div class="glass-card-body">
+                <div class="row g-3">
+                    @if (Model.AvailableRooms != null && Model.AvailableRooms.Any())
+                    {
+                        @foreach (var room in Model.AvailableRooms.Take(4))
+                        {
+                            var typeLower = room.Type?.ToLower() ?? "classroom";
+                            var typeBadge = typeLower == "lab" ? "badge-glow-cyan" : (typeLower == "seminar" ? "badge-glow-amber" : "badge-glow-purple");
+
+                            <div class="col-12 col-md-6">
+                                <div class="room-card is-available p-3">
+                                    <div>
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <div class="room-number-display">@room.RoomNumber</div>
+                                                <span class="badge-glow @typeBadge">@room.Type</span>
+                                            </div>
+                                            <span class="status-pill-available">Available</span>
+                                        </div>
+                                        <div class="text-secondary small mb-2">
+                                            Floor @room.Floor &bull; @room.Capacity Seats
+                                        </div>
+                                        <div class="d-flex flex-wrap gap-1 mb-3">
+                                            @foreach (var eq in (room.Equipment ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).Take(2))
+                                            {
+                                                <span class="equipment-pill">@eq.Trim()</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <a asp-controller="RoomBookings" asp-action="Create" asp-route-roomId="@room.RoomId" class="btn-gradient-primary w-100 justify-content-center btn-sm">
+                                        Reserve Room
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12 text-center py-4 text-muted">No rooms currently available.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Events -->
+    <div class="col-12 col-lg-6">
+        <div class="glass-card h-100">
+            <div class="glass-card-header">
+                <h5><i class="bi bi-flag text-primary"></i> Upcoming Events</h5>
+                <a asp-controller="CampusEvents" asp-action="Index" class="btn-glass btn-sm">Explore All &rarr;</a>
+            </div>
+            <div class="glass-card-body">
+                @if (Model.UpcomingEvents != null && Model.UpcomingEvents.Any())
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var ev in Model.UpcomingEvents.Take(2))
+                        {
+                            var spotsLeft = Math.Max(0, ev.Capacity - ev.RegisteredUsers);
+                            var isFull = spotsLeft == 0;
+                            var pct = ev.Capacity > 0 ? (int)((double)ev.RegisteredUsers / ev.Capacity * 100) : 0;
+
+                            <div class="glass-card p-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h6 class="fw-bold text-white mb-1">@ev.Name</h6>
+                                        <div class="text-secondary small">
+                                            Room @(ev.Venue ?? "Campus") &bull; @(ev.Organizer ?? "Organizer")
+                                        </div>
+                                        <div class="text-muted small">
+                                            @ev.Date.ToString("MMM dd, yyyy") &bull; @ev.Time
+                                        </div>
+                                    </div>
+                                    @if (isFull)
+                                    {
+                                        <span class="badge-glow badge-glow-rose">Event Full</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-glow badge-glow-lime">@spotsLeft spots left</span>
+                                    }
+                                </div>
+
+                                <div class="progress-dark mb-2">
+                                    <div class="progress-bar @(isFull ? "bg-danger" : "")" style="width: @pct%;"></div>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <span class="text-muted small"><strong>@ev.RegisteredUsers</strong> / @ev.Capacity registered (@pct%)</span>
+                                    <div class="d-flex gap-2">
+                                        <a asp-controller="CampusEvents" asp-action="Details" asp-route-id="@ev.EventId" class="btn-glass btn-sm">
+                                            Details
+                                        </a>
+                                        @if (!isFull)
+                                        {
+                                            <a asp-controller="CampusEvents" asp-action="Register" asp-route-id="@ev.EventId" class="btn-gradient-primary btn-sm">
+                                                Register &rarr;
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">No upcoming events scheduled.</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Row 3: Academic Assignments Tracker -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="glass-card">
+            <div class="glass-card-header">
+                <h5><i class="bi bi-journal-text text-primary"></i> Academic Tasks</h5>
+                <a asp-controller="Assignments" asp-action="Index" class="btn-glass btn-sm">View All &rarr;</a>
+            </div>
+            <div class="glass-card-body">
+                @if (Model.AssignmentDeadlines != null && Model.AssignmentDeadlines.Any())
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var assign in Model.AssignmentDeadlines.Take(4))
+                        {
+                            var diff = (assign.Deadline - DateTime.Now).TotalDays;
+                            var isSubmitted = assign.Status?.ToLower() == "submitted";
+                            var isOverdue = diff < 0 && !isSubmitted;
+
+                            <div class="assignment-card">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="course-code-badge">@assign.Course</span>
+                                        <span class="badge-glass">@assign.SubmissionPlatform</span>
+                                        <span class="badge-glass">@assign.Marks pts</span>
+                                    </div>
+                                    <div class="fw-bold text-white fs-6">@assign.Title</div>
+                                    @if (!string.IsNullOrEmpty(assign.CourseTitle))
+                                    {
+                                        <div class="text-muted small">@assign.CourseTitle</div>
+                                    }
+                                </div>
+
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="text-end">
+                                        <div class="fw-bold text-white small">@assign.Deadline.ToString("MMM dd, yyyy")</div>
+                                        @if (isSubmitted)
+                                        {
+                                            <span class="badge-glow badge-glow-lime">Submitted</span>
+                                        }
+                                        else if (isOverdue)
+                                        {
+                                            <span class="badge-glow badge-glow-rose">Overdue</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-glow badge-glow-cyan">Due in @Math.Ceiling(diff) days</span>
+                                        }
+                                    </div>
+                                    <a asp-controller="Assignments" asp-action="Details" asp-route-id="@assign.AssignmentId" class="btn-glass btn-sm">
+                                        View &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">No pending assignment deadlines.</div>
+                }
+            </div>
+        </div>
+    </div>
 </div>

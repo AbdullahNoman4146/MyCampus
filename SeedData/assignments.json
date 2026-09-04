@@ -1,0 +1,32 @@
+[
+  {
+    "Course": "CSE 3101 - Database Management Systems",
+    "Title": "Lab Project 2: Normalized Schema Design & Index Optimization",
+    "Deadline": "2026-09-12T23:59:00",
+    "Status": "Pending"
+  },
+  {
+    "Course": "CSE 3103 - Software Engineering",
+    "Title": "Sprint 1 Architecture Manifesto & Domain Modeling",
+    "Deadline": "2026-09-14T17:00:00",
+    "Status": "Pending"
+  },
+  {
+    "Course": "CSE 3105 - Artificial Intelligence",
+    "Title": "Assignment 3: Semantic Kernel Agent & Function Calling Implementation",
+    "Deadline": "2026-09-18T23:59:00",
+    "Status": "Pending"
+  },
+  {
+    "Course": "CSE 3107 - Web Engineering",
+    "Title": "Project Milestone 1: ASP.NET Core MVC with EF Core Migration",
+    "Deadline": "2026-09-08T23:59:00",
+    "Status": "Submitted"
+  },
+  {
+    "Course": "CSE 3111 - Computer Networks",
+    "Title": "Packet Sniffing & TCP Flow Analysis Report",
+    "Deadline": "2026-09-20T23:59:00",
+    "Status": "Pending"
+  }
+]

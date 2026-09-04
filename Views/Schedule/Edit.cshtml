@@ -1,52 +1,95 @@
 @model MyCampus.Models.Schedule
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Schedule";
 }
 
-<h1>Edit</h1>
+<div class="row justify-content-center">
+    <div class="col-12 col-md-9 col-lg-7">
+        <div class="glass-card p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stat-icon-wrapper" style="background: rgba(59, 130, 246, 0.15); color: #60A5FA; width: 46px; height: 46px; font-size: 1.25rem;">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-1 text-white">Edit Schedule</h3>
+                        <p class="text-secondary small mb-0">Modify timing, instructor, or room assignment in SQL Server</p>
+                    </div>
+                </div>
+                <a asp-action="Index" class="btn btn-sm btn-glass text-light">
+                    <i class="bi bi-arrow-left me-1"></i> Back
+                </a>
+            </div>
 
-<h4>Schedule</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ScheduleId" />
-            <div class="form-group">
-                <label asp-for="Course" class="control-label"></label>
-                <input asp-for="Course" class="form-control" />
-                <span asp-validation-for="Course" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Time" class="control-label"></label>
-                <input asp-for="Time" class="form-control" />
-                <span asp-validation-for="Time" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Room" class="control-label"></label>
-                <input asp-for="Room" class="form-control" />
-                <span asp-validation-for="Room" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Day" class="control-label"></label>
-                <input asp-for="Day" class="form-control" />
-                <span asp-validation-for="Day" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Instructor" class="control-label"></label>
-                <input asp-for="Instructor" class="form-control" />
-                <span asp-validation-for="Instructor" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger bg-danger bg-opacity-10 border-danger border-opacity-25 text-danger py-2 small rounded-3 mb-4" role="alert"></div>
+                <input type="hidden" asp-for="ScheduleId" />
+                <input type="hidden" asp-for="ExternalId" />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Course" class="form-label small fw-semibold text-light">Course Code <span class="text-danger">*</span></label>
+                        <input asp-for="Course" class="form-control" required />
+                        <span asp-validation-for="Course" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Section" class="form-label small fw-semibold text-light">Section</label>
+                        <input asp-for="Section" class="form-control" />
+                        <span asp-validation-for="Section" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Title" class="form-label small fw-semibold text-light">Course Title</label>
+                        <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Day" class="form-label small fw-semibold text-light">Day of Week <span class="text-danger">*</span></label>
+                        <select asp-for="Day" class="form-select" required>
+                            <option value="Sunday">Sunday</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                        </select>
+                        <span asp-validation-for="Day" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="StartTime" class="form-label small fw-semibold text-light">Start Time <span class="text-danger">*</span></label>
+                        <input asp-for="StartTime" type="time" class="form-control" required />
+                        <span asp-validation-for="StartTime" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="EndTime" class="form-label small fw-semibold text-light">End Time <span class="text-danger">*</span></label>
+                        <input asp-for="EndTime" type="time" class="form-control" required />
+                        <span asp-validation-for="EndTime" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Room" class="form-label small fw-semibold text-light">Classroom / Lab <span class="text-danger">*</span></label>
+                        <input asp-for="Room" class="form-control" required />
+                        <span asp-validation-for="Room" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Instructor" class="form-label small fw-semibold text-light">Instructor Name <span class="text-danger">*</span></label>
+                        <input asp-for="Instructor" class="form-control" required />
+                        <span asp-validation-for="Instructor" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-3 mt-4 pt-4 border-top border-secondary border-opacity-10">
+                    <a asp-action="Index" class="btn btn-glass px-4">Cancel</a>
+                    <button type="submit" class="btn btn-gradient-primary px-4 shadow">
+                        <i class="bi bi-check2-circle me-1"></i> Update Schedule
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

@@ -1,0 +1,82 @@
+@model MyCampus.Models.RoomBooking
+
+@{
+    ViewData["Title"] = "Reserve a Room";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-7">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h3 class="fw-bold text-white mb-0">Reserve a Room</h3>
+            </div>
+            <a asp-action="Index" class="btn-glass">&larr; Back to Bookings</a>
+        </div>
+
+        <div class="glass-card p-4">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                
+                @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+                {
+                    <div class="alert alert-danger mb-4 glass-card border-0" style="border-left: 4px solid var(--accent-rose) !important; background: rgba(239, 68, 68, 0.15);">
+                        <div class="fw-bold mb-1 text-danger">Unable to complete booking:</div>
+                        <ul class="mb-0 ps-3 text-white">
+                            @foreach (var error in ViewData.ModelState[string.Empty]!.Errors)
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label asp-for="RoomId" class="form-label">Select Room / Lab</label>
+                    <select asp-for="RoomId" class="form-select" asp-items="ViewBag.RoomId" required>
+                        <option value="">-- Choose a Room --</option>
+                    </select>
+                    <span asp-validation-for="RoomId" class="text-danger small"></span>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-md-4">
+                        <label asp-for="BookingDate" class="form-label">Reservation Date</label>
+                        <input asp-for="BookingDate" type="date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                        <span asp-validation-for="BookingDate" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label asp-for="StartTime" class="form-label">Start Time</label>
+                        <input asp-for="StartTime" type="time" class="form-control" required />
+                        <span asp-validation-for="StartTime" class="text-danger small"></span>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label asp-for="EndTime" class="form-label">End Time</label>
+                        <input asp-for="EndTime" type="time" class="form-control" required />
+                        <span asp-validation-for="EndTime" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="BookedBy" class="form-label">Booked By (Name / Club)</label>
+                    <input asp-for="BookedBy" class="form-control" placeholder="Enter name or group" required />
+                    <span asp-validation-for="BookedBy" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Purpose" class="form-label">Booking Purpose</label>
+                    <textarea asp-for="Purpose" class="form-control" rows="3" placeholder="e.g. Study Session, Workshop, Meeting..." required></textarea>
+                    <span asp-validation-for="Purpose" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn-gradient-primary px-4">Confirm Reservation</button>
+                    <a asp-action="Index" class="btn-glass">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

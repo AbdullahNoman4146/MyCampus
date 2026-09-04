@@ -1,45 +1,209 @@
 @model MyCampus.Models.CampusEvent
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Model.Name + " - Event Details";
+    var spotsLeft = Math.Max(0, Model.Capacity - Model.RegisteredUsers);
+    var isFull = spotsLeft == 0 || Model.Status == "full";
+    var pct = Model.Capacity > 0 ? (int)((double)Model.RegisteredUsers / Model.Capacity * 100) : 0;
 }
 
-<h1>Details</h1>
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
+            <div>
+                <h2 class="fw-bold text-white mb-1">@Model.Name</h2>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge-glass">Event ID: #@Model.EventId</span>
+                    @if (!string.IsNullOrEmpty(Model.ExternalId))
+                    {
+                        <span class="badge-glass font-monospace">@Model.ExternalId</span>
+                    }
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn-glass">&larr; Back to Events</a>
+                <a asp-action="Edit" asp-route-id="@Model.EventId" class="btn-glass">
+                    <i class="bi bi-pencil me-1"></i> Edit
+                </a>
+                <a asp-action="Delete" asp-route-id="@Model.EventId" class="btn-glass-danger">
+                    <i class="bi bi-trash me-1"></i> Delete
+                </a>
+                @if (!isFull)
+                {
+                    <a asp-action="Register" asp-route-id="@Model.EventId" class="btn-gradient-primary">
+                        Register Now &rarr;
+                    </a>
+                }
+            </div>
+        </div>
 
-<div>
-    <h4>CampusEvent</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Date)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Date)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Time)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Time)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Capacity)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Capacity)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.EventId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+        <div class="row g-4 mb-4">
+            <!-- Event Info Card -->
+            <div class="col-12 col-md-6">
+                <div class="glass-card p-4 h-100">
+                    <h5 class="fw-bold text-white border-bottom pb-3 mb-3" style="border-color: var(--border-subtle) !important;">
+                        Event Information
+                    </h5>
+                    
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <div class="p-3 rounded-3 mb-3 small" style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-subtle); color: var(--text-secondary);">
+                            <strong class="text-white">Description:</strong> @Model.Description
+                        </div>
+                    }
+
+                    <div class="d-flex flex-column gap-2 text-secondary">
+                        <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: var(--border-subtle) !important;">
+                            <span class="text-muted">Venue</span>
+                            <span class="fw-bold text-white">Room @(Model.Venue ?? "Campus")</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: var(--border-subtle) !important;">
+                            <span class="text-muted">Organizer</span>
+                            <span class="text-white">@(Model.Organizer ?? "Campus")</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: var(--border-subtle) !important;">
+                            <span class="text-muted">Date</span>
+                            <span class="text-white">@Model.Date.ToString("dddd, MMMM dd, yyyy")</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: var(--border-subtle) !important;">
+                            <span class="text-muted">Time</span>
+                            <span class="text-white font-monospace">@Model.Time</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: var(--border-subtle) !important;">
+                            <span class="text-muted">Total Capacity</span>
+                            <span class="text-white">@Model.Capacity participants</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2">
+                            <span class="text-muted">Status</span>
+                            <span>
+                                @if (isFull)
+                                {
+                                    <span class="badge-glow badge-glow-rose">Registration Full</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-glow badge-glow-lime">Registration Open</span>
+                                }
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Capacity Progress Card -->
+            <div class="col-12 col-md-6">
+                <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <h5 class="fw-bold text-white border-bottom pb-3 mb-3" style="border-color: var(--border-subtle) !important;">
+                            Attendance Capacity
+                        </h5>
+                        <div class="text-center my-4">
+                            <div class="display-5 fw-bold text-white">
+                                @Model.RegisteredUsers <span class="text-muted fs-4">/ @Model.Capacity</span>
+                            </div>
+                            <div class="text-secondary small mt-1">Seats Registered (@pct% full)</div>
+                        </div>
+
+                        <div class="progress-dark mb-3" style="height: 8px;">
+                            <div class="progress-bar @(isFull ? "bg-danger" : "")" style="width: @pct%;"></div>
+                        </div>
+
+                        <div class="d-flex justify-content-between text-muted small">
+                            <span>0 Registered</span>
+                            <span class="text-info fw-bold">@spotsLeft spots remaining</span>
+                            <span>@Model.Capacity Max</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-3">
+                        @if (!isFull)
+                        {
+                            <a asp-action="Register" asp-route-id="@Model.EventId" class="btn-gradient-primary w-100 justify-content-center">
+                                Register Now &rarr;
+                            </a>
+                        }
+                        else
+                        {
+                            <button class="btn-glass w-100 justify-content-center text-muted" disabled>Event is at full capacity</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registered Attendees List -->
+        <div class="glass-card">
+            <div class="glass-card-header">
+                <h5>Registered Attendees (@(Model.Registrations?.Count(r => r.Status == "Confirmed") ?? Model.RegisteredUsers))</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Reg #</th>
+                            <th>Student ID</th>
+                            <th>Student Name</th>
+                            <th>Email Address</th>
+                            <th>Registered On</th>
+                            <th>Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Registrations != null && Model.Registrations.Any())
+                        {
+                            @foreach (var reg in Model.Registrations)
+                            {
+                                var isConfirmed = reg.Status == "Confirmed";
+                                <tr>
+                                    <td>
+                                        <span class="badge-glass font-monospace">#@reg.RegistrationId</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge-glass font-monospace">@(reg.StudentId ?? "N/A")</span>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-white">@reg.StudentName</span>
+                                    </td>
+                                    <td class="text-secondary">@reg.StudentEmail</td>
+                                    <td class="text-muted small">@reg.RegistrationDate.ToString("MMM dd, yyyy hh:mm tt")</td>
+                                    <td>
+                                        @if (isConfirmed)
+                                        {
+                                            <span class="badge-glow badge-glow-lime">Confirmed</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-glow badge-glow-rose">Cancelled</span>
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        @if (isConfirmed)
+                                        {
+                                            <form asp-action="CancelRegistration" asp-route-registrationId="@reg.RegistrationId" method="post" onsubmit="return confirm('Cancel this student registration?');" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn-glass-danger btn-sm">Cancel</button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">Cancelled</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-secondary">
+                                    No registrations yet.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>

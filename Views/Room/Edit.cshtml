@@ -1,47 +1,87 @@
 @model MyCampus.Models.Room
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Room";
 }
 
-<h1>Edit</h1>
+<div class="row justify-content-center">
+    <div class="col-12 col-md-9 col-lg-7">
+        <div class="glass-card p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stat-icon-wrapper" style="background: rgba(59, 130, 246, 0.15); color: #60A5FA; width: 46px; height: 46px; font-size: 1.25rem;">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-1 text-white">Edit Room @Model.RoomNumber</h3>
+                        <p class="text-secondary small mb-0">Update facility specs, capacity, or booking status</p>
+                    </div>
+                </div>
+                <a asp-action="Index" class="btn btn-sm btn-glass text-light">
+                    <i class="bi bi-arrow-left me-1"></i> Back
+                </a>
+            </div>
 
-<h4>Room</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="RoomId" />
-            <div class="form-group">
-                <label asp-for="RoomNumber" class="control-label"></label>
-                <input asp-for="RoomNumber" class="form-control" />
-                <span asp-validation-for="RoomNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Capacity" class="control-label"></label>
-                <input asp-for="Capacity" class="form-control" />
-                <span asp-validation-for="Capacity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Equipment" class="control-label"></label>
-                <input asp-for="Equipment" class="form-control" />
-                <span asp-validation-for="Equipment" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BookingStatus" class="control-label"></label>
-                <input asp-for="BookingStatus" class="form-control" />
-                <span asp-validation-for="BookingStatus" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger bg-danger bg-opacity-10 border-danger border-opacity-25 text-danger py-2 small rounded-3 mb-4" role="alert"></div>
+                <input type="hidden" asp-for="RoomId" />
+                <input type="hidden" asp-for="ExternalId" />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="RoomNumber" class="form-label small fw-semibold text-light">Room Number <span class="text-danger">*</span></label>
+                        <input asp-for="RoomNumber" class="form-control" required />
+                        <span asp-validation-for="RoomNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Type" class="form-label small fw-semibold text-light">Room Type <span class="text-danger">*</span></label>
+                        <select asp-for="Type" class="form-select" required>
+                            <option value="classroom" selected="@(Model.Type == "classroom")">Classroom</option>
+                            <option value="lab" selected="@(Model.Type == "lab")">Computer / Hardware Lab</option>
+                            <option value="seminar" selected="@(Model.Type == "seminar")">Seminar Hall / Auditorium</option>
+                        </select>
+                        <span asp-validation-for="Type" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Capacity" class="form-label small fw-semibold text-light">Seating Capacity <span class="text-danger">*</span></label>
+                        <input asp-for="Capacity" type="number" class="form-control" min="1" required />
+                        <span asp-validation-for="Capacity" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Floor" class="form-label small fw-semibold text-light">Floor Number</label>
+                        <input asp-for="Floor" type="number" class="form-control" min="1" max="15" />
+                        <span asp-validation-for="Floor" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Equipment" class="form-label small fw-semibold text-light">Equipment (comma-separated)</label>
+                        <input asp-for="Equipment" class="form-control" />
+                        <span asp-validation-for="Equipment" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="BookingStatus" class="form-label small fw-semibold text-light">Booking Status</label>
+                        <select asp-for="BookingStatus" class="form-select">
+                            <option value="Available" selected="@(Model.BookingStatus == "Available")">Available</option>
+                            <option value="Booked" selected="@(Model.BookingStatus == "Booked")">Booked</option>
+                            <option value="Maintenance" selected="@(Model.BookingStatus == "Maintenance")">Under Maintenance</option>
+                        </select>
+                        <span asp-validation-for="BookingStatus" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-3 mt-4 pt-4 border-top border-secondary border-opacity-10">
+                    <a asp-action="Index" class="btn btn-glass px-4">Cancel</a>
+                    <button type="submit" class="btn btn-gradient-primary px-4 shadow">
+                        <i class="bi bi-check2-circle me-1"></i> Update Room
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

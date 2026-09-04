@@ -1,53 +1,118 @@
 @model IEnumerable<MyCampus.Models.CampusEvent>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Campus Events";
 }
 
-<h1>Index</h1>
+<!-- Page Header -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h2 class="fw-bold text-white mb-0">Campus Events</h2>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Create" class="btn-gradient-primary">
+            <i class="bi bi-plus-lg me-1"></i> Create Event
+        </a>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Date)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Time)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Capacity)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Time)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Capacity)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.EventId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.EventId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.EventId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<!-- Events Grid -->
+<div class="row g-4">
+    @if (Model != null && Model.Any())
+    {
+        @foreach (var item in Model)
+        {
+            var spotsLeft = Math.Max(0, item.Capacity - item.RegisteredUsers);
+            var isFull = spotsLeft == 0 || item.Status == "full";
+            var pct = item.Capacity > 0 ? (int)((double)item.RegisteredUsers / item.Capacity * 100) : 0;
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="event-card">
+                    <div class="event-card-banner">
+                        <span class="badge-glass">
+                            @(item.Organizer ?? "Organizer")
+                        </span>
+                        @if (isFull)
+                        {
+                            <span class="badge-glow badge-glow-rose">Full</span>
+                        }
+                        else
+                        {
+                            <span class="badge-glow badge-glow-lime">@spotsLeft seats open</span>
+                        }
+                    </div>
+
+                    <div class="event-card-body">
+                        <div>
+                            <h5 class="fw-bold text-white mb-2">@item.Name</h5>
+
+                            <div class="d-flex flex-wrap gap-2 text-secondary small mb-3">
+                                <span class="badge-glass">Room @(item.Venue ?? "Campus")</span>
+                                <span class="badge-glass">@item.Time</span>
+                            </div>
+
+                            <div class="text-secondary small mb-3">
+                                <strong>Date:</strong> @item.Date.ToString("MMMM dd, yyyy")
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(item.Description))
+                            {
+                                <p class="text-muted small mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                    @item.Description
+                                </p>
+                            }
+
+                            <!-- Capacity Progress Bar -->
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between text-muted small mb-1">
+                                    <span>Capacity</span>
+                                    <span><strong>@item.RegisteredUsers</strong> / @item.Capacity (@pct%)</span>
+                                </div>
+                                <div class="progress-dark">
+                                    <div class="progress-bar @(isFull ? "bg-danger" : "")" style="width: @pct%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Footer -->
+                        <div class="pt-3 border-top" style="border-color: var(--border-subtle) !important;">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex gap-2">
+                                    <a asp-action="Edit" asp-route-id="@item.EventId" class="btn-glass btn-sm">Edit</a>
+                                    <a asp-action="Details" asp-route-id="@item.EventId" class="btn-glass btn-sm">Details</a>
+                                    <a asp-action="Delete" asp-route-id="@item.EventId" class="btn-glass-danger btn-sm" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            @if (!isFull)
+                            {
+                                <a asp-action="Register" asp-route-id="@item.EventId" class="btn-gradient-primary w-100 justify-content-center">
+                                    Register for Event &rarr;
+                                </a>
+                            }
+                            else
+                            {
+                                <button class="btn-glass w-100 justify-content-center text-muted" disabled>
+                                    Registration Closed
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12 text-center py-5">
+            <div class="glass-card p-5">
+                <i class="bi bi-flag text-muted" style="font-size: 2.5rem;"></i>
+                <h5 class="text-white fw-bold mt-2">No Events Found</h5>
+                <p class="text-secondary small mb-3">Check back later for upcoming campus events.</p>
+                <a asp-action="Create" class="btn-gradient-primary btn-sm">Create Event</a>
+            </div>
+        </div>
+    }
+</div>

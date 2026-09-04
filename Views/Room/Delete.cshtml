@@ -1,50 +1,42 @@
 @model MyCampus.Models.Room
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Room";
 }
 
-<h1>Delete</h1>
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="glass-card p-4 p-md-5 border-danger border-opacity-25" style="box-shadow: 0 8px 32px rgba(239, 68, 68, 0.08);">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="stat-icon-wrapper" style="background: rgba(239, 68, 68, 0.15); color: #EF4444; width: 48px; height: 48px; font-size: 1.25rem;">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <div>
+                    <h4 class="fw-bold text-danger mb-0">Delete Room @Model.RoomNumber?</h4>
+                    <p class="text-secondary small mb-0">This action will remove facility records from database</p>
+                </div>
+            </div>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>MyCampus.Models.Room</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RoomNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RoomNumber)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Capacity)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Capacity)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Equipment)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Equipment)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BookingStatus)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BookingStatus)
-        </dd>
-    </dl>
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="RoomId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+            <p class="text-secondary small mb-4">
+                Are you sure you want to permanently remove this room from SQL Server? Any associated booking records may also be affected.
+            </p>
+
+            <div class="p-3 rounded-3 mb-4" style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15);">
+                <div class="fw-bold fs-5 text-white mb-1">Room @Model.RoomNumber (@Model.Type)</div>
+                <div class="small text-secondary mb-1">Capacity: @Model.Capacity seats | Floor: @Model.Floor</div>
+                <div class="small text-light">Equipment: @(string.IsNullOrEmpty(Model.Equipment) ? "Standard setup" : Model.Equipment)</div>
+            </div>
+
+            <form asp-action="Delete" asp-route-id="@Model.RoomId">
+                <input type="hidden" name="id" value="@Model.RoomId" />
+                <input type="hidden" asp-for="RoomId" />
+                <div class="d-flex justify-content-end gap-3 pt-3 border-top border-secondary border-opacity-10">
+                    <a asp-action="Index" class="btn btn-glass px-4">Cancel</a>
+                    <button type="submit" class="btn btn-danger px-4 shadow">
+                        <i class="bi bi-trash me-1"></i> Yes, Delete Room
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>

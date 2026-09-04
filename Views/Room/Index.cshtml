@@ -1,53 +1,196 @@
 @model IEnumerable<MyCampus.Models.Room>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Rooms & Labs";
 }
 
-<h1>Index</h1>
+<!-- Page Header -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h2 class="fw-bold text-white mb-0">Rooms & Labs</h2>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="RoomBookings" asp-action="Index" class="btn-glass">
+            <i class="bi bi-calendar-check me-1"></i> Bookings
+        </a>
+        <a asp-action="Create" class="btn-glass">
+            <i class="bi bi-plus-lg me-1"></i> New Room
+        </a>
+        <a asp-controller="RoomBookings" asp-action="Create" class="btn-gradient-primary">
+            <i class="bi bi-calendar-plus me-1"></i> Reserve Room
+        </a>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.RoomNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Capacity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Equipment)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BookingStatus)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.RoomNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Capacity)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Equipment)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.BookingStatus)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.RoomId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.RoomId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.RoomId">Delete</a>
-            </td>
-        </tr>
+<!-- Search & Filter Card -->
+<div class="glass-card p-3 mb-4">
+    <form method="get" asp-action="Index" class="row g-3 align-items-end">
+        <div class="col-12 col-md-3">
+            <label class="form-label">Min Capacity</label>
+            <input type="number" name="capacity" class="form-control" placeholder="e.g. 40" value="@ViewBag.SelectedCapacity" min="1" />
+        </div>
+        <div class="col-12 col-md-4">
+            <label class="form-label">Equipment</label>
+            <input type="text" name="equipment" class="form-control" placeholder="Projector, AC, smart board..." value="@ViewBag.SelectedEquipment" />
+        </div>
+        <div class="col-12 col-md-3">
+            <label class="form-label">Status</label>
+            <select name="availability" class="form-select">
+                <option value="All" selected="@(ViewBag.SelectedAvailability == "All" || ViewBag.SelectedAvailability == null)">All Statuses</option>
+                <option value="Available" selected="@(ViewBag.SelectedAvailability == "Available")">Available Only</option>
+                <option value="Booked" selected="@(ViewBag.SelectedAvailability == "Booked")">Booked Only</option>
+            </select>
+        </div>
+        <div class="col-12 col-md-2 d-flex gap-2">
+            <button type="submit" class="btn-gradient-primary w-100 justify-content-center">Search</button>
+            <a asp-action="Index" class="btn-glass">Reset</a>
+        </div>
+    </form>
+</div>
+
+<!-- Rooms Grid -->
+<div class="row g-4">
+    @if (Model != null && Model.Any())
+    {
+        @foreach (var item in Model)
+        {
+            var isAvailable = item.BookingStatus == "Available";
+            var typeLower = item.Type?.ToLower() ?? "classroom";
+            var typeBadge = typeLower == "lab" ? "badge-glow-cyan" : (typeLower == "seminar" ? "badge-glow-amber" : "badge-glow-purple");
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="room-card @(isAvailable ? "is-available" : "is-booked")">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <div class="room-number-display">@item.RoomNumber</div>
+                                <div class="d-flex align-items-center gap-1 mt-1">
+                                    <span class="badge-glow @typeBadge text-uppercase">@item.Type</span>
+                                    <span class="badge-glass">Floor @item.Floor</span>
+                                </div>
+                            </div>
+                            @if (isAvailable)
+                            {
+                                <span class="status-pill-available">Available</span>
+                            }
+                            else
+                            {
+                                <span class="status-pill-booked">Booked</span>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <span class="text-muted small d-block mb-1">Capacity:</span>
+                            <span class="fw-bold text-white fs-5">@item.Capacity <span class="text-muted fs-6">seats</span></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <span class="text-muted small d-block mb-1">Equipment:</span>
+                            <div class="d-flex flex-wrap gap-1">
+                                @foreach (var eq in (item.Equipment ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    <span class="equipment-pill">@eq.Trim()</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-top" style="border-color: var(--border-subtle) !important;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex gap-2">
+                                <a asp-action="Edit" asp-route-id="@item.RoomId" class="btn-glass btn-sm">Edit</a>
+                                <a asp-action="Details" asp-route-id="@item.RoomId" class="btn-glass btn-sm">Details</a>
+                                <a asp-action="Delete" asp-route-id="@item.RoomId" class="btn-glass-danger btn-sm" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-gradient-primary w-100 justify-content-center btn-sm btn-quick-book"
+                                data-room-id="@item.RoomId"
+                                data-room-number="@item.RoomNumber"
+                                data-bs-toggle="modal"
+                                data-bs-target="#quickBookingModal">
+                            <i class="bi bi-calendar-plus me-1"></i> Reserve Room @item.RoomNumber
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12 text-center py-5">
+            <div class="glass-card p-5">
+                <i class="bi bi-door-closed text-muted" style="font-size: 2.5rem;"></i>
+                <h5 class="text-white fw-bold mt-2">No Rooms Found</h5>
+                <p class="text-secondary small mb-3">Try adjusting your search criteria.</p>
+                <a asp-action="Index" class="btn-glass">Reset Filters</a>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Booking Modal -->
+<div class="modal fade" id="quickBookingModal" tabindex="-1" aria-labelledby="quickBookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-0" style="background: var(--bg-surface);">
+            <div class="modal-header border-bottom" style="border-color: var(--border-subtle) !important;">
+                <h5 class="modal-title text-white fw-bold" id="quickBookingModalLabel">
+                    Reserve <span id="modalRoomTitle" class="text-primary">Room</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="RoomBookings" asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="RoomId" id="modalRoomId" value="" />
+
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label">Booked By / Organizer</label>
+                        <input type="text" name="BookedBy" class="form-control" placeholder="Enter name or group" required value="Student" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Reservation Date</label>
+                        <input type="date" name="BookingDate" class="form-control" required value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label">Start Time</label>
+                            <input type="time" name="StartTime" class="form-control" required value="10:00" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">End Time</label>
+                            <input type="time" name="EndTime" class="form-control" required value="12:00" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Purpose</label>
+                        <textarea name="Purpose" class="form-control" rows="2" placeholder="e.g. Study Group, Project Review" required></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-top" style="border-color: var(--border-subtle) !important;">
+                    <button type="button" class="btn-glass" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-gradient-primary">Confirm Reservation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('.btn-quick-book').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const roomId = btn.getAttribute('data-room-id');
+            const roomNum = btn.getAttribute('data-room-number');
+            document.getElementById('modalRoomId').value = roomId;
+            document.getElementById('modalRoomTitle').innerText = 'Room ' + roomNum;
+        });
+    });
+</script>
 }
-    </tbody>
-</table>

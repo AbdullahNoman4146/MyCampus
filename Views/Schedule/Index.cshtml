@@ -1,59 +1,118 @@
 @model IEnumerable<MyCampus.Models.Schedule>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Class Schedule";
+    var days = new[] { "All", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday" };
+    var selectedDay = ViewBag.SelectedDay as string ?? "All";
 }
 
-<h1>Index</h1>
+<!-- Page Header -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h2 class="fw-bold text-white mb-0">Class Schedule</h2>
+    </div>
+    <a asp-action="Create" class="btn-gradient-primary">
+        <i class="bi bi-plus-lg me-1"></i> Add Class Schedule
+    </a>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Course)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Time)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Room)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Day)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Instructor)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.Course)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Time)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Room)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Day)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Instructor)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ScheduleId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ScheduleId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ScheduleId">Delete</a>
-            </td>
-        </tr>
+<!-- Filters Bar: Search & Day Pills -->
+<div class="glass-card p-3 mb-4">
+    <form method="get" asp-action="Index" class="row g-3 align-items-center">
+        <div class="col-12 col-lg-5">
+            <div class="position-relative">
+                <input type="text" name="search" value="@ViewBag.SearchTerm" class="form-control" placeholder="Search by course, title, instructor, or room..." />
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-7 d-flex flex-wrap align-items-center justify-content-lg-end gap-2">
+            <span class="text-muted small fw-bold text-uppercase me-1">Day:</span>
+            @foreach (var d in days)
+            {
+                var isActive = (selectedDay.Equals(d, StringComparison.OrdinalIgnoreCase)) || (d == "All" && string.IsNullOrEmpty(selectedDay));
+                <button type="submit" name="day" value="@d" class="day-tab-btn @(isActive ? "active" : "")">
+                    @d
+                </button>
+            }
+            <a asp-action="Index" class="btn-glass btn-sm ms-2">Reset</a>
+        </div>
+    </form>
+</div>
+
+<!-- Timetable / Course Stream Cards -->
+@if (Model != null && Model.Any())
+{
+    var groupedByDay = Model.GroupBy(s => s.Day).OrderBy(g => {
+        var d = g.Key?.ToLower() ?? "";
+        return d == "sunday" ? 1 : (d == "monday" ? 2 : (d == "tuesday" ? 3 : (d == "wednesday" ? 4 : (d == "thursday" ? 5 : 6))));
+    });
+
+    <div class="d-flex flex-column gap-4">
+        @foreach (var group in groupedByDay)
+        {
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="badge-glow badge-glow-lime fs-6">@group.Key</span>
+                    <span class="text-muted small">(@group.Count() classes)</span>
+                </div>
+
+                <div class="row g-3">
+                    @foreach (var item in group)
+                    {
+                        <div class="col-12 col-lg-6">
+                            <div class="schedule-card-item h-100">
+                                <div class="d-flex flex-column justify-content-between h-100 flex-grow-1">
+                                    <div>
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="course-code-badge">@item.Course</span>
+                                                @if (!string.IsNullOrEmpty(item.Section))
+                                                {
+                                                    <span class="badge-glass">Sec @item.Section</span>
+                                                }
+                                            </div>
+                                            <span class="badge-glow badge-glow-purple font-monospace">
+                                                @(item.StartTime ?? item.Time) - @item.EndTime
+                                            </span>
+                                        </div>
+
+                                        <h5 class="fw-bold text-white mb-1">@(item.Title ?? item.Course)</h5>
+                                        <div class="text-secondary small mb-3">
+                                            <strong>Instructor:</strong> @item.Instructor
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex align-items-center justify-content-between pt-3 border-top" style="border-color: var(--border-subtle) !important;">
+                                        <span class="badge-glass">
+                                            Room @item.Room
+                                        </span>
+
+                                        <div class="d-flex gap-2">
+                                            <a asp-action="Edit" asp-route-id="@item.ScheduleId" class="btn-glass btn-sm" title="Edit Schedule">
+                                                <i class="bi bi-pencil me-1"></i> Edit
+                                            </a>
+                                            <a asp-action="Details" asp-route-id="@item.ScheduleId" class="btn-glass btn-sm" title="View Details">
+                                                <i class="bi bi-info-circle me-1"></i> Details
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.ScheduleId" class="btn-glass-danger btn-sm" title="Delete Schedule">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
 }
-    </tbody>
-</table>
+else
+{
+    <div class="glass-card text-center py-5">
+        <i class="bi bi-calendar-x text-muted" style="font-size: 2rem;"></i>
+        <h5 class="text-white fw-bold mt-2">No class schedules found</h5>
+        <a asp-action="Create" class="btn-gradient-primary btn-sm mt-2">Add Schedule</a>
+    </div>
+}
