@@ -1,0 +1,21 @@
+﻿# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build files
+bin/
+obj/
+
+# Database files
+*.mdf
+*.ldf
+
+# User secrets
+secrets.json
+
+# Environment
+.env
+
+# Publish
+publish/
