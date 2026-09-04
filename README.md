@@ -64,37 +64,7 @@ Follow these exact steps to clone, configure, and run the project locally.
 
 ## 4. Environment Variables
 
-The project uses `.env.example` to document all necessary environment variables. **No real API keys are committed to the repository.**
-
-### Required Environment Keys
-
-| Variable | Description | Example Value |
-|---|---|---|
-| `OpenAI__ApiKey` | Your OpenAI API key for Semantic Kernel tool orchestration | `sk-proj-xxxxxxxxxxxxxxxxxxxx` |
-| `OpenAI__ModelId` | OpenAI model identifier | `gpt-4o-mini` |
-| `ConnectionStrings__DefaultConnection` *(Optional)* | Custom SQL Server connection string | `Server=.;Database=MyCampusDB;Trusted_Connection=True;TrustServerCertificate=True` |
-
-### Setting Environment Variables
-
-You can copy `.env.example` to `.env` or set them in your terminal before running:
-
-**PowerShell (Windows):**
-```powershell
-$env:OpenAI__ApiKey="your-actual-openai-api-key"
-$env:OpenAI__ModelId="gpt-4o-mini"
-dotnet run
-```
-
-**Bash (Linux / macOS):**
-```bash
-export OpenAI__ApiKey="your-actual-openai-api-key"
-export OpenAI__ModelId="gpt-4o-mini"
-dotnet run
-```
-
-*Alternatively, you can provide your key inside `appsettings.json` under `"OpenAI": { "ApiKey": "your-key-here" }` for local testing.*
-
----
+Everything is on appssettings.json
 
 ## 5. How to Use the AI Agent
 
