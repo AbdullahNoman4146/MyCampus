@@ -1,0 +1,26 @@
+[
+  {
+    "Title": "Fall 2026 Midterm Examination Schedule Published",
+    "Body": "The midterm examination schedule for all undergraduate programs has been finalized. Please check the university portal for room allocations and timing.",
+    "Date": "2026-09-02T10:00:00",
+    "Priority": "High"
+  },
+  {
+    "Title": "Campus High-Speed Wi-Fi Upgrade Notice",
+    "Body": "Network infrastructure maintenance will occur this Saturday between 11:00 PM and 03:00 AM. Wi-Fi access may be intermittently unavailable in Academic Building 2.",
+    "Date": "2026-09-03T14:30:00",
+    "Priority": "Medium"
+  },
+  {
+    "Title": "Registration Open for National Hackathon 2026",
+    "Body": "All CSE and EEE students are encouraged to register teams for the flagship National Hackathon. Exciting prize pool and industry mentorship opportunities await!",
+    "Date": "2026-09-04T08:00:00",
+    "Priority": "High"
+  },
+  {
+    "Title": "Central Library Extended Hours During Exam Season",
+    "Body": "Starting next week, the central library and digital reading rooms will remain open until midnight from Sunday through Thursday.",
+    "Date": "2026-09-04T12:00:00",
+    "Priority": "Low"
+  }
+]

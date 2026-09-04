@@ -1,52 +1,75 @@
 @model MyCampus.Models.Schedule
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Schedule Details";
 }
 
-<h1>Details</h1>
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="glass-card p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stat-icon-wrapper" style="width: 44px; height: 44px; font-size: 1.2rem;">
+                        <i class="bi bi-info-circle"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-0 text-white">Schedule Details</h3>
+                    </div>
+                </div>
+                <a asp-action="Index" class="btn btn-sm btn-glass text-light">
+                    <i class="bi bi-arrow-left me-1"></i> Back
+                </a>
+            </div>
 
-<div>
-    <h4>Schedule</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Course)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Course)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Time)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Time)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Room)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Room)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Day)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Day)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Instructor)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Instructor)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.ScheduleId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+            <div class="p-3 mb-4 rounded-3" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge-glow badge-glow-purple px-2 py-1 fs-6 fw-bold">@Model.Course</span>
+                            @if (!string.IsNullOrEmpty(Model.Section))
+                            {
+                                <span class="badge-glass px-2 py-1">Sec @Model.Section</span>
+                            }
+                        </div>
+                        <h5 class="fw-bold text-white mb-0">@(string.IsNullOrEmpty(Model.Title) ? "Class Session" : Model.Title)</h5>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex flex-column gap-3 mb-4">
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary border-opacity-10">
+                    <span class="text-secondary small">Day of Week</span>
+                    <span class="fw-semibold text-white">@Model.Day</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary border-opacity-10">
+                    <span class="text-secondary small">Time Slot</span>
+                    <span class="fw-semibold font-monospace text-info">@(Model.StartTime ?? Model.Time) - @Model.EndTime</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary border-opacity-10">
+                    <span class="text-secondary small">Room</span>
+                    <span class="badge-glass px-2 py-1 text-white">Room @Model.Room</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary border-opacity-10">
+                    <span class="text-secondary small">Instructor</span>
+                    <span class="fw-semibold text-white">@Model.Instructor</span>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.ExternalId))
+                {
+                    <div class="d-flex justify-content-between align-items-center py-2">
+                        <span class="text-secondary small">System Reference ID</span>
+                        <span class="font-monospace small text-secondary">@Model.ExternalId</span>
+                    </div>
+                }
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 pt-3 border-top border-secondary border-opacity-10">
+                <a asp-action="Edit" asp-route-id="@Model.ScheduleId" class="btn btn-gradient-primary px-3">
+                    <i class="bi bi-pencil me-1"></i> Edit
+                </a>
+                <a asp-action="Delete" asp-route-id="@Model.ScheduleId" class="btn btn-glass-danger px-3">
+                    <i class="bi bi-trash me-1"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
 </div>

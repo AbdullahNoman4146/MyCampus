@@ -1,0 +1,83 @@
+@model MyCampus.Models.EventRegistration
+
+@{
+    var ev = ViewBag.Event as MyCampus.Models.CampusEvent;
+    ViewData["Title"] = "Register for " + (ev?.Name ?? "Event");
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h3 class="fw-bold text-white mb-0">Event Registration</h3>
+            </div>
+            <a asp-action="Details" asp-route-id="@Model.EventId" class="btn-glass">&larr; Back to Event</a>
+        </div>
+
+        <!-- Event Summary Box -->
+        @if (ev != null)
+        {
+            var spotsLeft = Math.Max(0, ev.Capacity - ev.RegisteredUsers);
+            <div class="glass-card p-3 mb-4">
+                <h5 class="fw-bold text-white mb-1">@ev.Name</h5>
+                <div class="text-secondary small mb-2">
+                    <span>@ev.Date.ToString("MMM dd, yyyy")</span> &bull;
+                    <span>@ev.Time</span> &bull;
+                    <span>Room @(ev.Venue ?? "Campus")</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge-glow badge-glow-purple">@spotsLeft seats remaining</span>
+                    <span class="text-muted small">Capacity: @ev.Capacity</span>
+                </div>
+            </div>
+        }
+
+        <div class="glass-card p-4">
+            <form asp-action="Register" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="EventId" />
+
+                @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+                {
+                    <div class="alert alert-danger mb-4 glass-card border-0" style="border-left: 4px solid var(--accent-rose) !important; background: rgba(239, 68, 68, 0.15);">
+                        <div class="fw-bold mb-1 text-danger">Registration Error:</div>
+                        <ul class="mb-0 ps-3 text-white">
+                            @foreach (var error in ViewData.ModelState[string.Empty]!.Errors)
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label asp-for="StudentId" class="form-label">Student ID (Optional)</label>
+                    <input asp-for="StudentId" class="form-control" placeholder="Enter student ID" />
+                    <span asp-validation-for="StudentId" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="StudentName" class="form-label">Full Name</label>
+                    <input asp-for="StudentName" class="form-control" placeholder="Enter your full name" required />
+                    <span asp-validation-for="StudentName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="StudentEmail" class="form-label">Student Email Address</label>
+                    <input asp-for="StudentEmail" type="email" class="form-control" placeholder="e.g. student@aust.edu" required />
+                    <span asp-validation-for="StudentEmail" class="text-danger small"></span>
+                    <small class="text-muted mt-1 d-block">Each student email can only be registered once per event.</small>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn-gradient-primary px-4">Confirm Registration &rarr;</button>
+                    <a asp-action="Details" asp-route-id="@Model.EventId" class="btn-glass">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,48 +1,100 @@
 @model MyCampus.Models.Assignment
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Assignment";
 }
 
-<h1>Create</h1>
-
-<h4>Assignment</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group">
-                <label asp-for="Course" class="control-label"></label>
-                <input asp-for="Course" class="form-control" />
-                <span asp-validation-for="Course" class="text-danger"></span>
+<div class="row justify-content-center">
+    <div class="col-12 col-md-9 col-lg-7">
+        <div class="glass-card p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stat-icon-wrapper" style="background: rgba(139, 92, 246, 0.15); color: #A78BFA; width: 46px; height: 46px; font-size: 1.25rem;">
+                        <i class="bi bi-journal-plus"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-1 text-white">Add New Assignment</h3>
+                        <p class="text-secondary small mb-0">Record homework, lab tasks, or term paper deadlines</p>
+                    </div>
+                </div>
+                <a asp-action="Index" class="btn btn-sm btn-glass text-light">
+                    <i class="bi bi-arrow-left me-1"></i> Back
+                </a>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger bg-danger bg-opacity-10 border-danger border-opacity-25 text-danger py-2 small rounded-3 mb-4" role="alert"></div>
 
-            <div class="form-group">
-                <label asp-for="Deadline" class="control-label"></label>
-                <input asp-for="Deadline" class="form-control" />
-                <span asp-validation-for="Deadline" class="text-danger"></span>
-            </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Course" class="form-label small fw-semibold text-light">Course Code <span class="text-danger">*</span></label>
+                        <input asp-for="Course" class="form-control" placeholder="e.g. CSE 4113" required />
+                        <span asp-validation-for="Course" class="text-danger small"></span>
+                    </div>
 
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+                    <div class="col-md-6">
+                        <label asp-for="CourseTitle" class="form-label small fw-semibold text-light">Course Title</label>
+                        <input asp-for="CourseTitle" class="form-control" placeholder="e.g. Pattern Recognition" />
+                        <span asp-validation-for="CourseTitle" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Title" class="form-label small fw-semibold text-light">Assignment Title <span class="text-danger">*</span></label>
+                        <input asp-for="Title" class="form-control" placeholder="e.g. Assignment 1: Bayes Classifier" required />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label small fw-semibold text-light">Description / Requirements</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Submission instructions, report requirements..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="AssignedDate" class="form-label small fw-semibold text-light">Assigned Date</label>
+                        <input asp-for="AssignedDate" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="AssignedDate" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Deadline" class="form-label small fw-semibold text-light">Submission Deadline <span class="text-danger">*</span></label>
+                        <input asp-for="Deadline" type="date" class="form-control" value="@DateTime.Today.AddDays(7).ToString("yyyy-MM-dd")" required />
+                        <span asp-validation-for="Deadline" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Marks" class="form-label small fw-semibold text-light">Marks / Points</label>
+                        <input asp-for="Marks" type="number" class="form-control" placeholder="10" min="0" max="100" />
+                        <span asp-validation-for="Marks" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="SubmissionPlatform" class="form-label small fw-semibold text-light">Submission Platform</label>
+                        <input asp-for="SubmissionPlatform" class="form-control" placeholder="e.g. Google Classroom" />
+                        <span asp-validation-for="SubmissionPlatform" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Status" class="form-label small fw-semibold text-light">Status <span class="text-danger">*</span></label>
+                        <select asp-for="Status" class="form-select" required>
+                            <option value="pending" selected>Pending</option>
+                            <option value="submitted">Submitted</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-3 mt-4 pt-4 border-top border-secondary border-opacity-10">
+                    <a asp-action="Index" class="btn btn-glass px-4">Cancel</a>
+                    <button type="submit" class="btn btn-gradient-primary px-4 shadow">
+                        <i class="bi bi-check2-circle me-1"></i> Save Assignment
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

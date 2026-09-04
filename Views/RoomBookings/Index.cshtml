@@ -1,0 +1,130 @@
+@model IEnumerable<MyCampus.Models.RoomBooking>
+
+@{
+    ViewData["Title"] = "Room Bookings";
+}
+
+<!-- Page Header -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h2 class="fw-bold text-white mb-0">Room Bookings</h2>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Create" class="btn-gradient-primary">
+            <i class="bi bi-plus-lg me-1"></i> New Reservation
+        </a>
+        <a asp-controller="Rooms" asp-action="Index" class="btn-glass">
+            <i class="bi bi-door-closed me-1"></i> Browse Rooms
+        </a>
+    </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="glass-card p-3 mb-4">
+    <form method="get" asp-action="Index" class="row g-3 align-items-end">
+        <div class="col-12 col-md-5">
+            <label class="form-label">Filter by Room</label>
+            <select name="roomId" class="form-select" asp-items="ViewBag.RoomsList">
+                <option value="">All Rooms</option>
+            </select>
+        </div>
+        <div class="col-12 col-md-4">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-select">
+                <option value="All" selected="@(ViewBag.SelectedStatus == "All" || ViewBag.SelectedStatus == null)">All Statuses</option>
+                <option value="Confirmed" selected="@(ViewBag.SelectedStatus == "Confirmed")">Confirmed</option>
+                <option value="Cancelled" selected="@(ViewBag.SelectedStatus == "Cancelled")">Cancelled</option>
+            </select>
+        </div>
+        <div class="col-12 col-md-3 d-flex gap-2">
+            <button type="submit" class="btn-gradient-primary w-100 justify-content-center">Filter</button>
+            <a asp-action="Index" class="btn-glass">Reset</a>
+        </div>
+    </form>
+</div>
+
+<!-- Bookings Table -->
+<div class="glass-card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Ref ID</th>
+                    <th>Room</th>
+                    <th>Date</th>
+                    <th>Time Slot</th>
+                    <th>Booked By</th>
+                    <th>Purpose</th>
+                    <th>Status</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        var isConfirmed = item.Status == "Confirmed";
+                        <tr>
+                            <td>
+                                <span class="badge-glass font-monospace">#@item.BookingId</span>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-white fs-6">@(item.Room?.RoomNumber ?? "Room " + item.RoomId)</span>
+                                @if (item.Room != null && !string.IsNullOrEmpty(item.Room.Type))
+                                {
+                                    <span class="badge-glass small ms-1">@item.Room.Type</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="text-secondary">@item.BookingDate.ToString("MMM dd, yyyy")</span>
+                            </td>
+                            <td>
+                                <span class="text-white font-monospace">@item.StartTime.ToString(@"hh\:mm") - @item.EndTime.ToString(@"hh\:mm")</span>
+                            </td>
+                            <td>
+                                <span class="text-light">@item.BookedBy</span>
+                            </td>
+                            <td>
+                                <span class="text-secondary small">@item.Purpose</span>
+                            </td>
+                            <td>
+                                @if (isConfirmed)
+                                {
+                                    <span class="badge-glow badge-glow-lime">Confirmed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-glow badge-glow-rose">Cancelled</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                @if (isConfirmed)
+                                {
+                                    <form asp-action="Cancel" asp-route-id="@item.BookingId" method="post" onsubmit="return confirm('Are you sure you want to cancel this room booking?');" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn-glass-danger btn-sm">Cancel</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Cancelled</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-secondary">
+                            <i class="bi bi-inbox text-muted" style="font-size: 2rem;"></i>
+                            <h6 class="text-white fw-bold mt-2">No room reservations found</h6>
+                            <a asp-action="Create" class="btn-gradient-primary btn-sm mt-2">Reserve a Room</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

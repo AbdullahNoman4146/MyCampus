@@ -1,0 +1,58 @@
+[
+  {
+    "Course": "CSE 3101 - Database Management Systems",
+    "Time": "09:00 AM - 10:30 AM",
+    "Room": "Room 302",
+    "Day": "Sunday",
+    "Instructor": "Dr. Sarah Ahmed"
+  },
+  {
+    "Course": "CSE 3103 - Software Engineering",
+    "Time": "11:00 AM - 12:30 PM",
+    "Room": "Room 405",
+    "Day": "Sunday",
+    "Instructor": "Prof. Rafiqul Islam"
+  },
+  {
+    "Course": "CSE 3105 - Artificial Intelligence & Machine Learning",
+    "Time": "01:30 PM - 03:00 PM",
+    "Room": "Lab 2 (AI & Robotics)",
+    "Day": "Monday",
+    "Instructor": "Dr. Tahmina Akter"
+  },
+  {
+    "Course": "CSE 3107 - Web Engineering with ASP.NET Core",
+    "Time": "10:00 AM - 11:30 AM",
+    "Room": "Lab 1 (Software Systems)",
+    "Day": "Monday",
+    "Instructor": "Engr. Tanvir Hasan"
+  },
+  {
+    "Course": "CSE 3109 - Operating Systems & Distributed Systems",
+    "Time": "08:30 AM - 10:00 AM",
+    "Room": "Room 204",
+    "Day": "Tuesday",
+    "Instructor": "Prof. Masud Rana"
+  },
+  {
+    "Course": "CSE 3111 - Computer Networks",
+    "Time": "11:30 AM - 01:00 PM",
+    "Room": "Room 301",
+    "Day": "Tuesday",
+    "Instructor": "Dr. Farhana Yasmin"
+  },
+  {
+    "Course": "CSE 3113 - Algorithm Analysis & Design",
+    "Time": "02:00 PM - 03:30 PM",
+    "Room": "Auditorium 1",
+    "Day": "Wednesday",
+    "Instructor": "Prof. Kamrul Hassan"
+  },
+  {
+    "Course": "CSE 3115 - Cloud Computing & DevOps",
+    "Time": "10:30 AM - 12:00 PM",
+    "Room": "Lab 3 (Networking & Cloud)",
+    "Day": "Thursday",
+    "Instructor": "Engr. Shakil Mahmud"
+  }
+]

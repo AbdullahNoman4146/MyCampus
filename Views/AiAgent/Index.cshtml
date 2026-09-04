@@ -1,0 +1,235 @@
+@{
+    ViewData["Title"] = "AI Assistant";
+}
+
+<!-- AI Assistant Studio Container -->
+<div class="row g-4">
+    <!-- Left Sidebar: Capabilities & Suggested Prompts -->
+    <div class="col-12 col-lg-4 col-xl-3">
+        <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="brand-icon" style="width: 44px; height: 44px; font-size: 1.3rem;">
+                        <i class="bi bi-cpu"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold text-white mb-0">AI Assistant</h5>
+                    </div>
+                </div>
+
+                <div class="small fw-bold text-muted text-uppercase mb-2" style="letter-spacing: 0.8px;">
+                    Suggested Questions:
+                </div>
+                <div class="d-flex flex-column gap-2 mb-4">
+                    <button type="button" class="prompt-chip-dark" data-prompt="When is my next class?">
+                        When is my next class?
+                    </button>
+                    <button type="button" class="prompt-chip-dark" data-prompt="What classes do I have on Wednesday?">
+                        What classes do I have on Wednesday?
+                    </button>
+                    <button type="button" class="prompt-chip-dark" data-prompt="What assignments do I have due this week?">
+                        Assignments due this week?
+                    </button>
+                    <button type="button" class="prompt-chip-dark" data-prompt="Show me all high priority announcements">
+                        High priority announcements
+                    </button>
+                    <button type="button" class="prompt-chip-dark" data-prompt="Search available rooms with projector for at least 40 students">
+                        Labs with projector for 40+
+                    </button>
+                    <button type="button" class="prompt-chip-dark" data-prompt="Book Room 7A01 for 2026-09-18 from 10:00 to 12:00 for Study Session">
+                        Book Room 7A01
+                    </button>
+                    <button type="button" class="prompt-chip-dark" data-prompt="Register for AUSTPIC AI Build Hackathon">
+                        Register for Hackathon
+                    </button>
+                </div>
+            </div>
+
+            <div class="pt-3 border-top" style="border-color: var(--border-subtle) !important;">
+                <button id="btnClearChat" class="btn-glass w-100 justify-content-center btn-sm text-secondary">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Clear Chat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Center: Main Chat Window -->
+    <div class="col-12 col-lg-8 col-xl-9">
+        <div class="chat-container">
+            <!-- Chat Header -->
+            <div class="glass-card-header py-3 px-4" style="background: var(--bg-surface);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="brand-icon" style="width: 34px; height: 34px; font-size: 1rem;">
+                        <i class="bi bi-cpu"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-white" style="font-size: 0.95rem;">MyCampus Assistant</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Messages Stream -->
+            <div id="chatMessages" class="p-4 overflow-auto flex-grow-1 d-flex flex-column gap-3">
+                <!-- Welcome Message from AI -->
+                <div class="d-flex align-items-start gap-3">
+                    <div class="brand-icon flex-shrink-0" style="width: 36px; height: 36px; font-size: 1rem;">
+                        <i class="bi bi-cpu"></i>
+                    </div>
+                    <div class="chat-bubble-ai">
+                        <div class="fw-bold text-white mb-1">MyCampus Assistant</div>
+                        <div>
+                            Hello! I am your MyCampus assistant. How can I help you today?
+                            <br /><br />
+                            You can ask me to:
+                            <ul class="mb-0 ps-3 mt-1">
+                                <li>Check class schedules and timings</li>
+                                <li>Track assignments and deadlines</li>
+                                <li>Search available rooms and equipment</li>
+                                <li>Book a classroom or lab</li>
+                                <li>Register for campus events</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Typing Indicator (Hidden by default) -->
+            <div id="typingIndicator" class="px-4 py-2 d-none">
+                <div class="d-flex align-items-center gap-2 text-muted small">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                    <span>Processing request...</span>
+                </div>
+            </div>
+
+            <!-- Prompt Input Bar -->
+            <div class="p-3 border-top" style="border-color: var(--border-subtle) !important; background: var(--bg-surface);">
+                <form id="aiChatForm" class="d-flex gap-2 align-items-center">
+                    <input id="promptInput" type="text" class="form-control flex-grow-1" placeholder="Ask about schedules, rooms, assignments, or notices..." autocomplete="off" required />
+                    <button id="btnSendPrompt" type="submit" class="btn-gradient-primary px-4">
+                        <span>Send</span>
+                        <div id="spinner" class="spinner-border spinner-border-sm d-none" role="status"></div>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const chatMessages = document.getElementById('chatMessages');
+    const aiChatForm = document.getElementById('aiChatForm');
+    const promptInput = document.getElementById('promptInput');
+    const btnSendPrompt = document.getElementById('btnSendPrompt');
+    const spinner = document.getElementById('spinner');
+    const typingIndicator = document.getElementById('typingIndicator');
+
+    // Click on quick prompt chips
+    document.querySelectorAll('.prompt-chip-dark').forEach(chip => {
+        chip.addEventListener('click', () => {
+            promptInput.value = chip.getAttribute('data-prompt');
+            promptInput.focus();
+        });
+    });
+
+    document.getElementById('btnClearChat').addEventListener('click', () => {
+        chatMessages.innerHTML = '';
+        appendAiMessage("Conversation cleared. How can I assist you with your campus schedule or facilities today?");
+    });
+
+    aiChatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const prompt = promptInput.value.trim();
+        if (!prompt) return;
+
+        // Add user message to chat UI
+        appendUserMessage(prompt);
+        promptInput.value = '';
+        promptInput.disabled = true;
+        btnSendPrompt.disabled = true;
+        spinner.classList.remove('d-none');
+        typingIndicator.classList.remove('d-none');
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        try {
+            const response = await fetch('/AiAgent/Ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt: prompt })
+            });
+
+            const data = await response.json();
+            appendAiMessage(data.message, data.toolExecuted);
+        } catch (err) {
+            appendAiMessage("Error communicating with the assistant. Please try again.", null);
+        } finally {
+            promptInput.disabled = false;
+            btnSendPrompt.disabled = false;
+            spinner.classList.add('d-none');
+            typingIndicator.classList.add('d-none');
+            promptInput.focus();
+        }
+    });
+
+    function appendUserMessage(text) {
+        const div = document.createElement('div');
+        div.className = 'd-flex align-items-start gap-3 justify-content-end';
+        div.innerHTML = `
+            <div class="chat-bubble-user">
+                <div class="fw-bold mb-1 text-muted" style="font-size: 0.75rem;">You</div>
+                <div>${escapeHtml(text)}</div>
+            </div>
+            <div class="stat-icon-wrapper flex-shrink-0" style="width: 34px; height: 34px; font-size: 0.9rem;">
+                <i class="bi bi-person"></i>
+            </div>
+        `;
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function appendAiMessage(text, toolExecuted) {
+        const div = document.createElement('div');
+        div.className = 'd-flex align-items-start gap-3';
+
+        let toolBadgeHtml = '';
+        if (toolExecuted) {
+            toolBadgeHtml = `<div class="mb-2"><span class="badge-glow badge-glow-blue">Action: <strong>${escapeHtml(toolExecuted)}</strong></span></div>`;
+        }
+
+        // Format markdown bold, headers, backticks, bullet lists
+        let formatted = escapeHtml(text)
+            .replace(/\n/g, '<br/>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/### (.*?)(<br\/>|$)/g, '<h6 class="fw-bold text-white mt-2 mb-1" style="font-size: 1rem;">$1</h6>')
+            .replace(/`(.*?)`/g, '<code class="px-1 py-0.5 rounded text-info" style="background: rgba(255,255,255,0.08); font-family: JetBrains Mono, monospace;">$1</code>');
+
+        div.innerHTML = `
+            <div class="brand-icon flex-shrink-0" style="width: 36px; height: 36px; font-size: 1rem;">
+                <i class="bi bi-cpu"></i>
+            </div>
+            <div class="chat-bubble-ai">
+                <div class="fw-bold text-white mb-1">MyCampus Assistant</div>
+                ${toolBadgeHtml}
+                <div>${formatted}</div>
+            </div>
+        `;
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function escapeHtml(string) {
+        const entityMap = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        };
+        return String(string).replace(/[&<>"']/g, function (s) {
+            return entityMap[s];
+        });
+    }
+</script>
+}
