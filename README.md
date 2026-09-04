@@ -33,7 +33,7 @@ Follow these exact steps to clone, configure, and run the project locally.
 
 1. **Clone the repository:**
    ```bash
-   git clone <YOUR_REPO_URL>
+   git clone https://github.com/AbdullahNoman4146/MyCampus
    cd MyCampus
    ```
 
@@ -58,7 +58,7 @@ Follow these exact steps to clone, configure, and run the project locally.
    > **Automatic Database Migration & Seeding:** On first launch, `Program.cs` automatically executes EF Core migrations and seeds all initial campus datasets (schedules, rooms, events, announcements, assignments) from the `data/` directory into SQL Server.
 
 6. **Open in browser:**
-   Navigate to [http://localhost:5099](http://localhost:5099) (or the URL printed in your console).
+   Navigate to [http://localhost:5099](https://localhost:7148/) (or the URL printed in your console).
 
 ---
 
